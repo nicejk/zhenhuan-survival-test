@@ -480,9 +480,12 @@ input {
   font-size: 14px;
 }
 
-.quiz-next {
-  flex: 1;
-  padding: 14px 10px;
+.quiz-nav .quiz-submitting {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--crimson-2);
+  letter-spacing: 0.08em;
+  align-self: center;
 }
 
 .quiz-meta {

@@ -1,20 +1,31 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { QUESTION_BY_ID, USER_ORDER } from '../../shared/questions.js';
 
 const LETTERS = ['A', 'B', 'C', 'D'];
 
-export default function Quiz({ answers, index, setIndex, onAnswer, onReselect, onFinish, remaining, busy }) {
+export default function Quiz({ answers, index, setIndex, onAnswer, onFinish, remaining, busy }) {
   const total = USER_ORDER.length;
   const current = QUESTION_BY_ID[USER_ORDER[index]];
   const selected = answers[current.id];
   const answered = Object.keys(answers).length;
   const isLast = index === total - 1;
   const progress = ((index + 1) / total) * 100;
+  const [advancing, setAdvancing] = useState(false);
+  const timerRef = useRef(null);
 
-  const next = () => {
-    if (selected === undefined) return;
-    if (isLast) onFinish(answers);
-    else setIndex(index + 1);
+  useEffect(() => () => clearTimeout(timerRef.current), []);
+  // 切换题目后重置过渡态
+  useEffect(() => { setAdvancing(false); }, [index]);
+
+  const pick = (i) => {
+    if (advancing || busy) return;
+    onAnswer(current.id, i);
+    setAdvancing(true);
+    // 停留一瞬，让用户看到选中反馈，再自动进入下一题 / 提交
+    timerRef.current = setTimeout(() => {
+      if (isLast) onFinish({ ...answers, [current.id]: i });
+      else setIndex(index + 1);
+    }, 320);
   };
 
   return (
@@ -47,7 +58,8 @@ export default function Quiz({ answers, index, setIndex, onAnswer, onReselect, o
             <button
               key={i}
               className={`opt ${selected === i ? 'selected' : ''}`}
-              onClick={() => onAnswer(current.id, i)}
+              onClick={() => pick(i)}
+              disabled={busy}
             >
               <span className="opt-letter">{LETTERS[i]}</span>
               <span className="opt-text">{opt.text}</span>
@@ -61,16 +73,7 @@ export default function Quiz({ answers, index, setIndex, onAnswer, onReselect, o
         <button className="btn-ghost" onClick={() => setIndex(Math.max(0, index - 1))} disabled={index === 0}>
           上一题
         </button>
-        <button
-          className="btn-text"
-          onClick={() => onReselect(current.id)}
-          disabled={selected === undefined}
-        >
-          重新选择
-        </button>
-        <button className="btn-primary quiz-next" onClick={next} disabled={selected === undefined || busy}>
-          {isLast ? (busy ? '正在结算…' : '提交测评') : '下一题'}
-        </button>
+        {isLast && busy && <span className="quiz-submitting">正在结算…</span>}
       </footer>
 
       <p className="quiz-meta">已作答 {answered} / {total}</p>

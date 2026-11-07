@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import LockScreen from './components/LockScreen.jsx';
+import { TOTAL_QUESTIONS } from '../shared/questions.js';
 import Quiz from './components/Quiz.jsx';
 import ResultView from './components/ResultView.jsx';
 import ReportView from './components/ReportView.jsx';
@@ -63,7 +64,7 @@ export default function App() {
           const savedAnswers = JSON.parse(localStorage.getItem(draftKey(saved)) || '{}');
           setAnswers(savedAnswers);
           const answered = Object.keys(savedAnswers).length;
-          setIndex(Math.min(answered, 31));
+          setIndex(Math.min(answered, TOTAL_QUESTIONS - 1));
           setStage('quiz');
           return;
         }
@@ -98,15 +99,6 @@ export default function App() {
   const handleAnswer = (qid, optIndex) => {
     setAnswers((prev) => {
       const next = { ...prev, [qid]: optIndex };
-      localStorage.setItem(draftKey(token), JSON.stringify(next));
-      return next;
-    });
-  };
-
-  const handleReselect = (qid) => {
-    setAnswers((prev) => {
-      const next = { ...prev };
-      delete next[qid];
       localStorage.setItem(draftKey(token), JSON.stringify(next));
       return next;
     });
@@ -188,7 +180,6 @@ export default function App() {
           index={index}
           setIndex={setIndex}
           onAnswer={handleAnswer}
-          onReselect={handleReselect}
           onFinish={handleFinish}
           remaining={remaining}
           busy={busy}
