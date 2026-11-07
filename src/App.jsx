@@ -89,7 +89,6 @@ export default function App() {
       setAttempts([]);
       setAnswers({});
       setIndex(0);
-      setUnlocked(false);
       setStage('quiz');
     } finally {
       setBusy(false);
@@ -132,7 +131,6 @@ export default function App() {
       setAnswers({});
       setIndex(0);
       setAttempts([]);
-      setUnlocked(false);
       setResult(null);
       setStage('quiz');
       notify(`第 ${data.attemptNo} 次测评开始`);
@@ -164,7 +162,6 @@ export default function App() {
     setAnswers({});
     setIndex(0);
     setRemaining(null);
-    setUnlocked(false);
     setStage('lock');
   };
 
