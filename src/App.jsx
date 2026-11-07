@@ -38,7 +38,6 @@ export default function App() {
   const [answers, setAnswers] = useState({});
   const [index, setIndex] = useState(0);
   const [result, setResult] = useState(null);
-  const [unlocked, setUnlocked] = useState(false);
   const [toast, setToast] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -69,9 +68,8 @@ export default function App() {
           return;
         }
         setResult(data.result);
-        setUnlocked(data.unlocked);
         setAttempts(await loadAttempts(saved));
-        setStage(data.unlocked ? 'report' : 'result');
+        setStage('result');
       })
       .catch(() => {
         localStorage.removeItem(STORAGE_KEY);
@@ -123,20 +121,11 @@ export default function App() {
       window.scrollTo({ top: 0, behavior: 'instant' });
       const list = await loadAttempts(token);
       setAttempts(list);
-      const current = list.find((a) => a.token === token);
-      setUnlocked(Boolean(current?.unlocked));
     } catch (e) {
       notify(e.message);
     } finally {
       setBusy(false);
     }
-  };
-
-  const handleUnlock = async () => {
-    const data = await api('/api/unlock', { token });
-    setResult(data.result);
-    setUnlocked(true);
-    setAttempts(await loadAttempts(token));
   };
 
   // 重测：复用同一密码的剩余次数，新建下一次会话
@@ -166,7 +155,6 @@ export default function App() {
     setToken(attempt.token);
     localStorage.setItem(STORAGE_KEY, attempt.token);
     setResult(attempt.result);
-    setUnlocked(attempt.unlocked);
     setStage('result');
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
@@ -226,9 +214,6 @@ export default function App() {
       {stage === 'report' && result && (
         <ReportView
           result={result}
-          unlocked={unlocked}
-          onUnlock={handleUnlock}
-          onNotify={notify}
           onBack={() => {
             setStage('result');
             window.scrollTo({ top: 0, behavior: 'instant' });

@@ -154,8 +154,8 @@ export default function ResultView({
       <div className="paywall-card" onClick={onNext}>
         <span className="paywall-badge">完整版</span>
         <div className="paywall-copy">
-          <b>你的六维逐项深读、三个高风险时刻、30 天微调计划</b>
-          <span>比这一页细 3 倍，排版也更好看</span>
+          <b>六维逐项深读、三个高风险时刻、30 天微调计划</b>
+          <span>点击直接查看，无需付费</span>
         </div>
         <span className="paywall-arrow">→</span>
       </div>

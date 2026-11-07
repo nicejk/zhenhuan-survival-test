@@ -85,11 +85,10 @@ Deno.serve(async (req) => {
       const row = reserved.row;
       const history = await listSessions(row.code);
       const attemptNo = history.length + 1;
-      const inheritedUnlock = history.some((s: any) => Boolean(s.unlocked));
       const id = crypto.randomUUID();
       const { error: insertError } = await sb
         .from('sessions')
-        .insert({ id, code: row.code, attempt_no: attemptNo, unlocked: inheritedUnlock });
+        .insert({ id, code: row.code, attempt_no: attemptNo });
       if (insertError) throw insertError;
 
       return json({
@@ -115,7 +114,7 @@ Deno.serve(async (req) => {
         }
       }
 
-      const result = buildResult(body.answers, false);
+      const result = buildResult(body.answers);
       const { error } = await sb
         .from('sessions')
         .update({
@@ -142,32 +141,12 @@ Deno.serve(async (req) => {
       if (!session.completed) return json({ ok: true, completed: false, remaining });
 
       const answers = parseAnswers(session.answers);
-      const unlocked = Boolean(session.unlocked);
       return json({
         ok: true,
         completed: true,
-        unlocked,
         remaining,
         attemptNo: session.attempt_no || 1,
-        result: buildResult(answers, unlocked),
-      });
-    }
-
-    /** 解锁完整版：同一密码下的所有结果一起解锁 */
-    if (route[0] === 'unlock' && req.method === 'POST') {
-      const body = await req.json().catch(() => ({}));
-      const session = body?.token ? await getSession(body.token) : null;
-      if (!session) return json({ ok: false, message: '会话不存在。' }, 401);
-      if (!session.completed) return json({ ok: false, message: '请先完成测试。' }, 400);
-
-      const { error } = await sb.from('sessions').update({ unlocked: true }).eq('code', session.code);
-      if (error) throw error;
-
-      const answers = parseAnswers(session.answers);
-      return json({
-        ok: true,
-        result: buildResult(answers, true),
-        payment: { mode: 'simulated', amount: 9.9 },
+        result: buildResult(answers),
       });
     }
 
@@ -186,11 +165,10 @@ Deno.serve(async (req) => {
 
       const history = await listSessions(session.code);
       const attemptNo = history.length + 1;
-      const inheritedUnlock = history.some((s: any) => Boolean(s.unlocked));
       const id = crypto.randomUUID();
       const { error: insertError } = await sb
         .from('sessions')
-        .insert({ id, code: session.code, attempt_no: attemptNo, unlocked: inheritedUnlock });
+        .insert({ id, code: session.code, attempt_no: attemptNo });
       if (insertError) throw insertError;
 
       return json({
@@ -212,13 +190,11 @@ Deno.serve(async (req) => {
       const attempts = rows
         .filter((row: any) => row.completed)
         .map((row: any) => {
-          const unlocked = Boolean(row.unlocked);
           return {
             token: row.id,
             attemptNo: row.attempt_no || 1,
-            unlocked,
             createdAt: row.created_at,
-            result: buildResult(parseAnswers(row.answers), unlocked),
+            result: buildResult(parseAnswers(row.answers)),
           };
         });
 

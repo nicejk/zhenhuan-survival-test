@@ -112,8 +112,8 @@ export function computeResult(answers) {
   };
 }
 
-/** 组装返回给前端的完整结果对象（public 部分永远返回，report 部分按 unlocked 决定）。 */
-export function buildResult(answers, unlocked) {
+/** 组装返回给前端的完整结果对象（完整版内容默认全部返回）。 */
+export function buildResult(answers) {
   const computed = computeResult(answers);
   const archetype = ARCHETYPES.find((a) => a.id === computed.archetypeId);
   const cause = CAUSES[computed.causeKey];
@@ -142,17 +142,15 @@ export function buildResult(answers, unlocked) {
     shareText: `我在《甄嬛传》里活到第 ${computed.episode} 集。\n死因：${cause.title.replace('死于', '')}。\n原型：${archetype.name}型｜${archetype.alias}。\n你呢？`,
   };
 
-  if (unlocked) {
-    publicResult.full = {
-      portrait: archetype.full.portrait,
-      moments: archetype.full.moments,
-      roles: archetype.full.roles,
-      plan: archetype.full.plan,
-      closing: archetype.full.closing,
-      dimDetail: computed.dimDetail,
-      weakestKey: computed.causeKey,
-    };
-  }
+  publicResult.full = {
+    portrait: archetype.full.portrait,
+    moments: archetype.full.moments,
+    roles: archetype.full.roles,
+    plan: archetype.full.plan,
+    closing: archetype.full.closing,
+    dimDetail: computed.dimDetail,
+    weakestKey: computed.causeKey,
+  };
 
   return publicResult;
 }

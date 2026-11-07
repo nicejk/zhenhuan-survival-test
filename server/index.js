@@ -50,10 +50,9 @@ app.post('/api/auth', async (req, res) => {
 
     const history = await store.listSessionsByCode(result.row.code);
     const attemptNo = history.length + 1;
-    const inheritedUnlock = history.some((s) => Boolean(s.unlocked));
 
     const id = crypto.randomUUID();
-    await store.createSession({ id, code: result.row.code, attemptNo, unlocked: inheritedUnlock });
+    await store.createSession({ id, code: result.row.code, attemptNo });
     const remaining = result.row.max_uses - result.row.used_count;
 
     res.json({
@@ -84,7 +83,7 @@ app.post('/api/complete', async (req, res) => {
       }
     }
 
-    const result = buildResult(answers, false);
+    const result = buildResult(answers);
     await store.completeSession(token, {
       answers,
       result,
@@ -112,13 +111,11 @@ app.get('/api/result/:token', async (req, res) => {
     }
 
     const answers = typeof session.answers === 'string' ? JSON.parse(session.answers) : session.answers;
-    const unlocked = Boolean(session.unlocked);
-    const result = buildResult(answers, unlocked);
+    const result = buildResult(answers);
 
     res.json({
       ok: true,
       completed: true,
-      unlocked,
       remaining,
       attemptNo: session.attempt_no || 1,
       result,
@@ -129,26 +126,7 @@ app.get('/api/result/:token', async (req, res) => {
   }
 });
 
-/** 4. 模拟支付 → 解锁完整版 */
-app.post('/api/unlock', async (req, res) => {
-  try {
-    const { token } = req.body || {};
-    const session = token ? await store.getSession(token) : null;
-    if (!session) return res.status(401).json({ ok: false, message: '会话不存在。' });
-    if (!session.completed) return res.status(400).json({ ok: false, message: '请先完成测试。' });
-
-    await store.unlockByCode(session.code);
-    const answers = typeof session.answers === 'string' ? JSON.parse(session.answers) : session.answers;
-    const result = buildResult(answers, true);
-
-    res.json({ ok: true, result, payment: { mode: 'simulated', amount: 9.9 } });
-  } catch (err) {
-    console.error('[unlock]', err);
-    res.status(500).json({ ok: false, message: '解锁失败，请稍后再试。' });
-  }
-});
-
-/** 5. 重测：复用同一密码的剩余次数，新建下一次会话 */
+/** 4. 重测：复用同一密码的剩余次数，新建下一次会话 */
 app.post('/api/retest', async (req, res) => {
   try {
     const { token } = req.body || {};
@@ -163,9 +141,8 @@ app.post('/api/retest', async (req, res) => {
 
     const history = await store.listSessionsByCode(session.code);
     const attemptNo = history.length + 1;
-    const inheritedUnlock = history.some((s) => Boolean(s.unlocked));
     const id = crypto.randomUUID();
-    await store.createSession({ id, code: session.code, attemptNo, unlocked: inheritedUnlock });
+    await store.createSession({ id, code: session.code, attemptNo });
 
     res.json({
       ok: true,
@@ -192,13 +169,11 @@ app.get('/api/attempts/:token', async (req, res) => {
       .filter((row) => row.completed)
       .map((row) => {
         const answers = typeof row.answers === 'string' ? JSON.parse(row.answers) : row.answers;
-        const unlocked = Boolean(row.unlocked);
         return {
           token: row.id,
           attemptNo: row.attempt_no || 1,
-          unlocked,
           createdAt: row.created_at,
-          result: buildResult(answers, unlocked),
+          result: buildResult(answers),
         };
       });
 

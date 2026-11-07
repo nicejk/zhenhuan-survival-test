@@ -40,10 +40,10 @@ export const store = {
     return res;
   },
 
-  async createSession({ id, code, attemptNo = 1, unlocked = false }) {
+  async createSession({ id, code, attemptNo = 1 }) {
     await rest('sessions', {
       method: 'POST',
-      body: JSON.stringify({ id, code, attempt_no: attemptNo, unlocked }),
+      body: JSON.stringify({ id, code, attempt_no: attemptNo }),
     });
     return this.getSession(id);
   },
@@ -78,22 +78,6 @@ export const store = {
       }),
     });
     return this.getSession(id);
-  },
-
-  async unlockSession(id) {
-    await rest(`sessions?id=eq.${encodeURIComponent(id)}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ unlocked: true }),
-    });
-    return this.getSession(id);
-  },
-
-  // 同一密码解锁一次，后续重测的完整版也免费
-  async unlockByCode(code) {
-    await rest(`sessions?code=eq.${encodeURIComponent(code)}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ unlocked: true }),
-    });
   },
 
   async createPasswords(codes, maxUses = 3, note = '') {

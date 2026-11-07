@@ -57,13 +57,8 @@ export const store = {
     return { ok: true, row };
   },
 
-  createSession({ id, code, attemptNo = 1, unlocked = false }) {
-    db.prepare('INSERT INTO sessions (id, code, attempt_no, unlocked) VALUES (?, ?, ?, ?)').run(
-      id,
-      code,
-      attemptNo,
-      unlocked ? 1 : 0
-    );
+  createSession({ id, code, attemptNo = 1 }) {
+    db.prepare('INSERT INTO sessions (id, code, attempt_no) VALUES (?, ?, ?)').run(id, code, attemptNo);
     return this.getSession(id);
   },
 
@@ -86,16 +81,6 @@ export const store = {
       'UPDATE sessions SET completed = 1, answers = ?, result = ?, episode = ?, archetype = ?, total = ? WHERE id = ?'
     ).run(JSON.stringify(answers), JSON.stringify(result), episode, archetype, total, id);
     return this.getSession(id);
-  },
-
-  unlockSession(id) {
-    db.prepare('UPDATE sessions SET unlocked = 1 WHERE id = ?').run(id);
-    return this.getSession(id);
-  },
-
-  // 同一密码解锁一次，后续重测的完整版也免费
-  unlockByCode(code) {
-    db.prepare('UPDATE sessions SET unlocked = 1 WHERE code = ?').run(code);
   },
 
   createPasswords(codes, maxUses = 3, note = '') {
