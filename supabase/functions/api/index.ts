@@ -99,11 +99,14 @@ function generatePlainCode(): string {
   }
 }
 
-/** 取客户端 IP 并归一化：x-forwarded-for 取最右（由平台网关追加，防客户端伪造）；IPv6 收敛到 /64 网段 */
+/** 取客户端 IP 并归一化：Supabase 链路 x-forwarded-for 末端是平台中继 IP（逐请求变化），
+ *  真实客户端在倒数第二位（攻击者伪造的头部只会出现在更左侧，不影响）；
+ *  去相邻重复后取倒数第二；IPv6 收敛到 /64 网段 */
 function clientIp(req: Request): string {
   const fwd = req.headers.get('x-forwarded-for') || '';
   const parts = fwd.split(',').map((s) => s.trim()).filter(Boolean);
-  const ip = parts.length ? parts[parts.length - 1] : '';
+  const dedup = parts.filter((p, i) => i === 0 || p !== parts[i - 1]);
+  const ip = dedup.length >= 2 ? dedup[dedup.length - 2] : (dedup[0] || '');
   if (ip.includes(':')) return `${ip.split(':').slice(0, 4).join(':')}::/64`;
   return ip || 'unknown';
 }
@@ -168,6 +171,19 @@ Deno.serve(async (req) => {
         }
         await sb.from('admin_logs').insert({ action: 'generate', detail: { count, uses, note } });
         return json({ ok: true, codes: plain, count, uses });
+      }
+
+      /** 临时调试：查看限流使用的 IP 归一化结果 */
+      if (sub === 'debug-ip' && req.method === 'GET') {
+        return json({ ok: true, ip: clientIp(req), xff: req.headers.get('x-forwarded-for') });
+      }
+
+      /** 清空验证尝试记录（运维清理 / 风控测试复位） */
+      if (sub === 'purge-attempts' && req.method === 'POST') {
+        const { error } = await sb.from('code_attempts').delete().gte('id', 0);
+        if (error) throw error;
+        await sb.from('admin_logs').insert({ action: 'purge-attempts', detail: {} });
+        return json({ ok: true });
       }
 
       /** 查询兑换码（支持按明文码查单个） */
