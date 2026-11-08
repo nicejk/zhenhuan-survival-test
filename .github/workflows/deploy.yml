@@ -27,8 +27,9 @@ jobs:
       - run: npm run build
         env:
           VITE_API_BASE: ${{ vars.VITE_API_BASE }}
-          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+          # 以下为前端公开值（publishable key 设计即公开），仓库变量缺失时用兜底值
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://juiaetgiyltpbmmvctdc.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY || 'sb_publishable_Tp1VOq_rS-DMjVK978HqpA_WyoMNTuV' }}
       - uses: actions/configure-pages@v5
         with:
           enablement: true
