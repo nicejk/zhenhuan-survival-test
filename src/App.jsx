@@ -53,6 +53,7 @@ export default function App() {
   const [busy, setBusy] = useState(false);
   const [grading, setGrading] = useState(false);
   const [activeToken, setActiveToken] = useState(null); // 测评对照当前选中的记录
+  const [authError, setAuthError] = useState(''); // 激活失败原因，回锁屏后展示
 
   const notify = (msg) => {
     setToast(msg);
@@ -156,19 +157,33 @@ export default function App() {
     setResult(null);
     setBusy(false);
     setStage('quiz');
+    setAuthError('');
+    // 网关/网络抖动自动重试一次；业务错误（带 reason）不重试
+    const call = async (fn, tries = 2) => {
+      try {
+        return await fn();
+      } catch (e) {
+        if (!e.reason && tries > 1) {
+          await new Promise((r) => setTimeout(r, 1200));
+          return call(fn, tries - 1);
+        }
+        throw e;
+      }
+    };
     try {
-      await ensureIdentity();
-      const data = await api('/api/activate', { code });
+      await call(() => ensureIdentity());
+      const data = await call(() => api('/api/activate', { code }));
       setEntitlement(data.entitlement);
-      const r = await api('/api/attempts', { request_id: requestId });
+      const r = await call(() => api('/api/attempts', { request_id: requestId }));
       localStorage.setItem(ATTEMPT_KEY, JSON.stringify({ requestId, token: r.token }));
       setAttempt({ token: r.token, requestId, attemptNo: r.attemptNo });
       setActiveToken(r.token);
       notify('兑换成功，权益已激活');
     } catch (e) {
-      // 校验失败：退回兑换码页，用 toast 提示（此时 LockScreen 已重新挂载）
+      // 校验失败：退回兑换码页，并把原因留在输入框下方
+      console.warn('[activate]', e.reason || 'network', e.message);
       setStage('lock');
-      notify(e.message || '兑换码不正确或不可用');
+      setAuthError(e.message || '兑换码不正确或不可用');
     }
   };
 
@@ -291,6 +306,8 @@ export default function App() {
           booting={stage === 'boot'}
           onNotify={notify}
           onWarm={warmApi}
+          authError={authError}
+          onClearAuthError={() => setAuthError('')}
           entitlement={entitlement}
         />
       )}
