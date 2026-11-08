@@ -23,6 +23,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
+    "undici": "^8.12.4",
     "vite": "^5.4.11"
   }
 }

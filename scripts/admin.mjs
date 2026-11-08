@@ -1,6 +1,21 @@
 #!/usr/bin/env node
-// 自动走系统代理（Node fetch 默认不读 http_proxy/https_proxy，需显式开启）
-process.env.NODE_USE_ENV_PROXY ||= '1';
+// 自动走代理：优先环境变量，否则读 macOS 系统代理（Node fetch 默认不走代理，直连会被重置）
+import { execSync } from 'node:child_process';
+import { ProxyAgent, setGlobalDispatcher } from 'undici';
+
+function systemProxy() {
+  try {
+    const out = execSync('scutil --proxy', { encoding: 'utf8' });
+    const host = out.match(/HTTPSProxy\s*:\s*(\S+)/)?.[1] || out.match(/HTTPProxy\s*:\s*(\S+)/)?.[1];
+    const port = out.match(/HTTPSPort\s*:\s*(\d+)/)?.[1] || out.match(/HTTPPort\s*:\s*(\d+)/)?.[1];
+    return host && port ? `http://${host}:${port}` : null;
+  } catch {
+    return null;
+  }
+}
+
+const proxy = process.env.https_proxy || process.env.HTTPS_PROXY || process.env.http_proxy || systemProxy();
+if (proxy) setGlobalDispatcher(new ProxyAgent(proxy));
 /**
  * 运营管理脚本（本地使用，密钥从 scripts/.admin-key 读取，绝不入库）。
  *
