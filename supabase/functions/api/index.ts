@@ -260,7 +260,7 @@ Deno.serve(async (req) => {
     }
 
     /** 开始一次测评：校验权益 + 建记录（不扣次），幂等 */
-    if (route[0] === 'attempts' && req.method === 'POST') {
+    if (route[0] === 'attempts' && !route[1] && req.method === 'POST') {
       const body = await req.json().catch(() => ({}));
       const requestId = String(body?.request_id || '');
       if (!/^[0-9a-f-]{36}$/i.test(requestId)) {
