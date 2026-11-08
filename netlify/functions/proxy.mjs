@@ -8,6 +8,8 @@
 
 const UPSTREAM = 'https://juiaetgiyltpbmmvctdc.supabase.co';
 const ALLOWED_PREFIXES = ['auth/v1/', 'functions/v1/api/'];
+// auth/v1/admin/* 是 Supabase 管理 API（需 service_role），不应对公网代理开放
+const DENIED_PREFIXES = ['auth/v1/admin/'];
 const FORWARD_HEADERS = ['authorization', 'apikey', 'content-type', 'x-client-info'];
 const TIMEOUT_MS = 15000;
 
@@ -29,8 +31,9 @@ export default async (req) => {
   const url = new URL(req.url);
   const rest = url.pathname.replace(/^\/sb\/?/, '');
 
-  // 白名单校验：只允许认证与业务 API 两条前缀
-  if (!ALLOWED_PREFIXES.some((p) => rest.startsWith(p))) {
+  // 白名单校验：只允许认证与业务 API 两条前缀；管理端点显式拒绝
+  const denied = DENIED_PREFIXES.some((p) => rest.startsWith(p));
+  if (denied || !ALLOWED_PREFIXES.some((p) => rest.startsWith(p))) {
     return json(403, { ok: false, message: 'forbidden' });
   }
 
