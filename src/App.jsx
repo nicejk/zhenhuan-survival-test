@@ -332,7 +332,7 @@ export default function App() {
             <p className="lock-eyebrow">体 验 权 益</p>
             <h1 className="lock-title">本次体验权益<br />已使用完毕</h1>
             <p className="lock-sub">您已完成 {entitlement?.totalUses ?? 3} 次测评，感谢体验！</p>
-            <button className="btn-primary lock-btn" onClick={purchase}>去购买</button>
+            <button className="btn-primary lock-btn" onClick={() => setStage('lock')}>使用新兑换码</button>
             {attempts.length > 0 && (
               <div className="gate-history">
                 {attempts.map((a) => (
@@ -342,7 +342,6 @@ export default function App() {
                 ))}
               </div>
             )}
-            <button className="switch-code" onClick={() => setStage('lock')}>使用新兑换码</button>
           </div>
         </section>
       )}
