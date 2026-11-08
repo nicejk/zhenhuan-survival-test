@@ -1055,6 +1055,14 @@ input {
   z-index: -1;
 }
 
+/* 完整版长图截图容器：占满 750px，避免被 .report 的 560px 限宽裁掉两侧 */
+.shot-full .report,
+.shot-full .full-report {
+  max-width: 100%;
+  margin: 0;
+  padding: 24px 20px 32px;
+}
+
 .modal-mask {
   position: fixed;
   inset: 0;
