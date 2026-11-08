@@ -37,9 +37,9 @@ export default function LockScreen({ onAuth, busy, entitlement }) {
         <p className="lock-eyebrow">甄 嬛 传 · 生 存 力 测 评</p>
 
         <h1 className="lock-title">
-          你在宫里
+          你能在甄嬛传中
           <br />
-          能活到<span className="hl">第几集</span>
+          活到<span className="hl">大结局</span>吗
         </h1>
 
         <p className="lock-sub">
@@ -76,8 +76,6 @@ export default function LockScreen({ onAuth, busy, entitlement }) {
         </form>
 
         <p className="lock-foot">
-          兑换码将绑定本设备浏览器；清除数据或更换设备后身份无法自动恢复，需联系客服人工迁移。
-          <br />
           本测评为娱乐向性格测验，结果不构成任何现实建议
         </p>
       </div>
