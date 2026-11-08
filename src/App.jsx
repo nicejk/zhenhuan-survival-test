@@ -15,7 +15,6 @@ const API_BASE = (
   import.meta.env.VITE_API_BASE ||
   (import.meta.env.DEV ? '' : `${window.location.origin}/sb/functions/v1`)
 ).replace(/\/$/, '');
-const PURCHASE_URL = import.meta.env.VITE_PURCHASE_URL || '';
 
 async function api(path, body) {
   const token = await accessToken();
@@ -226,11 +225,6 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
-  const purchase = () => {
-    if (PURCHASE_URL) window.open(PURCHASE_URL, '_blank');
-    else notify('购买入口即将上线，请留意小红书店铺');
-  };
-
   const remaining = entitlement?.remaining ?? null;
 
   return (
@@ -359,9 +353,8 @@ export default function App() {
           <div className="lock-inner">
             <p className="lock-eyebrow">体 验 权 益</p>
             <h1 className="lock-title">您的体验权益<br />已过期</h1>
-            <p className="lock-sub">如需继续使用，请重新购买体验权益。</p>
-            <button className="btn-primary lock-btn" onClick={purchase}>去购买</button>
-            <button className="switch-code" onClick={() => setStage('lock')}>使用新兑换码</button>
+            <p className="lock-sub">如需继续使用，请使用新的兑换码。</p>
+            <button className="btn-primary lock-btn" onClick={() => setStage('lock')}>使用新兑换码</button>
           </div>
         </section>
       )}
