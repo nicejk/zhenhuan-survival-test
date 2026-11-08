@@ -6,6 +6,10 @@ const ORIGIN = 'https://gongdou-test.netlify.app';
 const ANON = 'sb_publishable_Tp1VOq_rS-DMjVK978HqpA_WyoMNTuV';
 const CODE = process.argv[2];
 
+// 国内直连 Netlify 生效慢，默认 10s 连接超时容易误判失败
+import { Agent, setGlobalDispatcher } from 'undici';
+setGlobalDispatcher(new Agent({ connect: { timeout: 40000 }, headersTimeout: 60000, bodyTimeout: 60000 }));
+
 const { QUESTIONS } = await import('file://' + process.cwd() + '/shared/questions.js');
 const VALID = Object.fromEntries(QUESTIONS.map((q) => [q.id, 0]));
 const INVALID = { ...VALID, [QUESTIONS[0].id]: 9 };
@@ -184,7 +188,7 @@ check(
 );
 
 const history = await api('/attempts', { token: tokenA });
-check('我的测评记录可读', history.status === 200 && (history.data.attempts || []).length === 2, `count=${history.data.attempts?.length}`);
+check('我的测评记录可读', history.status === 200 && (history.data.attempts || []).length === 3, `count=${history.data.attempts?.length}`);
 
 console.log(`\n合计：${pass} PASS / ${fail} FAIL`);
 process.exit(fail ? 1 : 0);

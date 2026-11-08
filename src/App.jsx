@@ -140,7 +140,7 @@ export default function App() {
     try {
       const data = await api('/api/activate', { code });
       setEntitlement(data.entitlement);
-      notify('兑换成功，权益已绑定本设备');
+      notify('兑换成功，权益已激活');
       await routeByEntitlement(data.entitlement);
     } finally {
       setBusy(false);
@@ -274,7 +274,6 @@ export default function App() {
                 ))}
               </div>
             )}
-            <p className="lock-hint">权益已绑定本设备浏览器，清除数据或换设备需联系客服迁移</p>
           </div>
         </section>
       )}
