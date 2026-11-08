@@ -1,4 +1,4 @@
-name = "zhenhuan-survival-test"
+name = "gongdou"
 compatibility_date = "2026-11-08"
 
 # 纯静态资产托管（Vite SPA 构建产物），无 Worker 脚本 → 静态请求不消耗 Workers 调用配额
