@@ -9,8 +9,12 @@ import { ensureIdentity, accessToken } from './lib/supabase.js';
 const ATTEMPT_KEY = 'zh_attempt';
 const draftKey = (rid) => `zh_answers:${rid}`;
 
-// 本地开发走 Vite 代理；线上通过 VITE_API_BASE 指向 Supabase Edge Function
-const API_BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
+// 本地开发走 Vite 代理；GitHub Pages / Cloudflare 通过 VITE_API_BASE 直连 Supabase Edge Function；
+// Netlify 生产构建不设 VITE_API_BASE，走同域代理（/sb/functions/v1 → Edge Function）
+const API_BASE = (
+  import.meta.env.VITE_API_BASE ||
+  (import.meta.env.DEV ? '' : `${window.location.origin}/sb/functions/v1`)
+).replace(/\/$/, '');
 const PURCHASE_URL = import.meta.env.VITE_PURCHASE_URL || '';
 
 async function api(path, body) {

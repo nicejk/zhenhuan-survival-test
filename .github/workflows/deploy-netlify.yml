@@ -1,0 +1,36 @@
+name: Deploy to Netlify
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      prod:
+        description: '部署到正式环境（false=预览）'
+        type: boolean
+        default: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 注意：Netlify 构建不注入 VITE_SUPABASE_URL / VITE_API_BASE，
+      # 前端自动走同域代理 /sb；anon key 仍需注入（公开密钥，非敏感）
+      - name: Build
+        run: npm ci && npm run build
+        env:
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Deploy to Netlify
+        run: npx --yes netlify-cli@17 deploy $PROD_FLAG --dir=dist --functions=netlify/functions --site=$NETLIFY_SITE_ID --auth=$NETLIFY_AUTH_TOKEN
+        env:
+          # 手动触发且 prod=false 时部署预览；push 到 main 一律上正式
+          PROD_FLAG: ${{ (github.event_name == 'workflow_dispatch' && !inputs.prod) && '' || '--prod' }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

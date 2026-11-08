@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+# /sb/* 由 netlify/functions/proxy.mjs 接管（函数路由优先于 SPA 回退）
+
+# SPA 路由回退：刷新/直达子路径均返回 index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

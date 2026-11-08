@@ -9,3 +9,5 @@ data
 supabase/.temp
 .trae-html-share-packages
 scripts/.admin-key
+scripts/.cf-token
+scripts/.netlify-token
