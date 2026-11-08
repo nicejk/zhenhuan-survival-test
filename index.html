@@ -9,8 +9,73 @@
     <meta name="theme-color" content="#1b1512" />
     <meta name="description" content="你在《甄嬛传》里能活到第几集？一份用六维权力生存力模型算出来的答案。" />
     <title>你在《甄嬛传》里，能活到第几集？</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #1b1512;
+      }
+      /* 首屏骨架：脚本到达前先呈现画面，避免长时间白屏 */
+      #boot-skel {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0 24px;
+        text-align: center;
+        color: #f2e7d5;
+        font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        background: #1b1512;
+        z-index: 1;
+      }
+      #boot-skel .bs-eyebrow {
+        margin: 0 0 26px;
+        font-size: 13px;
+        letter-spacing: 0.22em;
+        opacity: 0.55;
+      }
+      #boot-skel .bs-title {
+        margin: 0 0 22px;
+        font-size: 30px;
+        font-weight: 600;
+        line-height: 1.45;
+        letter-spacing: 0.02em;
+      }
+      #boot-skel .bs-title em {
+        font-style: normal;
+        color: #c9a45c;
+      }
+      #boot-skel .bs-tip {
+        margin: 0;
+        font-size: 13px;
+        opacity: 0.45;
+        animation: bs-pulse 1.4s ease-in-out infinite;
+      }
+      @keyframes bs-pulse {
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 0.6;
+        }
+      }
+      /* 隐藏 Netlify 免费套餐自动注入的品牌徽标 */
+      #nl-badge-frame,
+      #nl-hud-frame,
+      #netlify-badge {
+        display: none !important;
+      }
+    </style>
   </head>
   <body>
+    <div id="boot-skel" aria-hidden="true">
+      <p class="bs-eyebrow">甄 嬛 传 · 生 存 力 测 评</p>
+      <h1 class="bs-title">你在甄嬛传中<br />能活到<em>第几集</em></h1>
+      <p class="bs-tip">正在开殿门…</p>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

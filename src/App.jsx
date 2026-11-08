@@ -229,10 +229,14 @@ export default function App() {
 
   return (
     <div className="app">
-      {stage === 'boot' && <div className="boot">正在开殿门…</div>}
-
-      {stage === 'lock' && (
-        <LockScreen onAuth={handleActivate} busy={busy} onNotify={notify} entitlement={entitlement} />
+      {(stage === 'boot' || stage === 'lock') && (
+        <LockScreen
+          onAuth={handleActivate}
+          busy={busy}
+          booting={stage === 'boot'}
+          onNotify={notify}
+          entitlement={entitlement}
+        />
       )}
 
       {stage === 'gate' && (

@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import { toPng } from 'html-to-image';
 import ShareCard from './ShareCard.jsx';
 
 export default function ShareModal({ result, open, onClose }) {
@@ -14,6 +13,7 @@ export default function ShareModal({ result, open, onClose }) {
     setTip('');
     try {
       const node = cardRef.current;
+      const { toPng } = await import('html-to-image'); // 仅生成分享长图时加载，减小首屏包
       const dataUrl = await toPng(node, {
         pixelRatio: 2,
         backgroundColor: '#f2e7d5',

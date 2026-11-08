@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function LockScreen({ onAuth, busy, entitlement }) {
+export default function LockScreen({ onAuth, busy, entitlement, booting }) {
   const [code, setCode] = useState('');
   const [err, setErr] = useState('');
 
@@ -13,6 +13,7 @@ export default function LockScreen({ onAuth, busy, entitlement }) {
 
   const submit = async (e) => {
     e.preventDefault();
+    if (booting) return;
     const clean = code.trim();
     if (!clean) {
       setErr('请先输入兑换码');
@@ -67,8 +68,8 @@ export default function LockScreen({ onAuth, busy, entitlement }) {
             autoComplete="off"
             spellCheck="false"
           />
-          <button className="btn-primary lock-btn" type="submit" disabled={busy}>
-            {busy ? '正在验证…' : '开启殿门'}
+          <button className="btn-primary lock-btn" type="submit" disabled={busy || booting}>
+            {booting ? '正在开殿门…' : busy ? '正在验证…' : '开启殿门'}
           </button>
           {err && <p className="lock-error">{err}</p>}
           {frozenNote && !err && <p className="lock-error">{frozenNote}</p>}
