@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// 自动走系统代理（Node fetch 默认不读 http_proxy/https_proxy，需显式开启）
+process.env.NODE_USE_ENV_PROXY ||= '1';
 /**
  * 运营管理脚本（本地使用，密钥从 scripts/.admin-key 读取，绝不入库）。
  *
