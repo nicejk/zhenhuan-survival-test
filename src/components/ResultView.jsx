@@ -87,6 +87,18 @@ export default function ResultView({
         </div>
         <p className="ep-label">{result.episodeLabel}</p>
 
+        <div className="ep-progress">
+          <div className="ep-progress-track">
+            <span
+              className="ep-progress-fill"
+              style={{ width: `${Math.round((result.episode / 76) * 100)}%` }}
+            />
+          </div>
+          <p className="ep-progress-text">
+            全剧 76 集 · 已走过 <b>{Math.round((result.episode / 76) * 100)}%</b>
+          </p>
+        </div>
+
         <div className="cause-pill">
           <span className="cause-tag">死因</span>
           <span>{result.cause.title.replace('死于', '')}</span>

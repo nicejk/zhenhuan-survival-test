@@ -618,7 +618,36 @@ input {
   font-size: 13px;
   color: rgba(247, 239, 226, 0.55);
   letter-spacing: 0.2em;
-  margin: 0 0 26px;
+  margin: 0 0 16px;
+}
+
+/* 集数进度：全剧 76 集走到多少 */
+.ep-progress {
+  width: min(268px, 80%);
+  margin: 0 auto 24px;
+}
+.ep-progress-track {
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(247, 239, 226, 0.14);
+  overflow: hidden;
+}
+.ep-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #b8914f, #e3c98c);
+}
+.ep-progress-text {
+  margin: 9px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: rgba(247, 239, 226, 0.5);
+}
+.ep-progress-text b {
+  color: #e3c98c;
+  font-weight: 600;
+  letter-spacing: 0.04em;
 }
 
 .cause-pill {
