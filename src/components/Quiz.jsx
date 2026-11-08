@@ -3,7 +3,7 @@ import { QUESTION_BY_ID, USER_ORDER } from '../../shared/questions.js';
 
 const LETTERS = ['A', 'B', 'C', 'D'];
 
-export default function Quiz({ answers, index, setIndex, onAnswer, onFinish, remaining, busy }) {
+export default function Quiz({ answers, index, setIndex, onAnswer, onFinish, remaining, expiresAt, busy }) {
   const total = USER_ORDER.length;
   const current = QUESTION_BY_ID[USER_ORDER[index]];
   const selected = answers[current.id];
@@ -42,7 +42,9 @@ export default function Quiz({ answers, index, setIndex, onAnswer, onFinish, rem
         <div className="quiz-count">
           第 <b>{index + 1}</b> / {total} 题
         </div>
-        <div className="quiz-remaining">{remaining !== null ? `剩余 ${remaining} 次` : ''}</div>
+        <div className="quiz-remaining">
+          {remaining !== null ? `剩余 ${remaining} 次${expiresAt ? ` · ${expiresAt} 前有效` : ''}` : ''}
+        </div>
       </header>
 
       <div className="quiz-bar">

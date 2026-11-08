@@ -13,6 +13,7 @@
     "gen-codes": "node server/gen-codes.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
     "express": "^4.21.2",
     "html-to-image": "^1.11.11",
     "react": "^18.3.1",

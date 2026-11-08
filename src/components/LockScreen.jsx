@@ -1,18 +1,26 @@
 import React, { useState } from 'react';
 
-export default function LockScreen({ onAuth, busy, onNotify }) {
+export default function LockScreen({ onAuth, busy, entitlement }) {
   const [code, setCode] = useState('');
   const [err, setErr] = useState('');
 
+  const frozenNote =
+    entitlement?.status === 'frozen'
+      ? '你的兑换码已被冻结，请联系客服。'
+      : entitlement?.status === 'void'
+        ? '你的兑换码已作废，请联系客服。'
+        : '';
+
   const submit = async (e) => {
     e.preventDefault();
-    if (!code.trim()) {
-      setErr('请先输入测评密码');
+    const clean = code.trim();
+    if (!clean) {
+      setErr('请先输入兑换码');
       return;
     }
     setErr('');
     try {
-      await onAuth(code);
+      await onAuth(clean);
     } catch (ex) {
       setErr(ex.message);
     }
@@ -35,7 +43,7 @@ export default function LockScreen({ onAuth, busy, onNotify }) {
         </h1>
 
         <p className="lock-sub">
-          32 道真实情境题 · 六维权力生存力
+          25 道真实情境题 · 六维权力生存力
           <br />
           算出一个属于你的集数
         </p>
@@ -47,25 +55,30 @@ export default function LockScreen({ onAuth, busy, onNotify }) {
 
         <form className="lock-card" onSubmit={submit}>
           <label className="lock-label" htmlFor="code">
-            请输入测评密码
+            请输入兑换码
           </label>
           <input
             id="code"
             className="lock-input"
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
-            placeholder="例如 ZHENHUAN-001"
+            placeholder="例如 XXXX-XXXX-XXXX-XXXX"
             autoComplete="off"
             spellCheck="false"
           />
           <button className="btn-primary lock-btn" type="submit" disabled={busy}>
-            {busy ? '正在验令…' : '开启殿门'}
+            {busy ? '正在验证…' : '开启殿门'}
           </button>
           {err && <p className="lock-error">{err}</p>}
-          <p className="lock-hint">每个密码可测 3 次，用完即止</p>
+          {frozenNote && !err && <p className="lock-error">{frozenNote}</p>}
+          <p className="lock-hint">每个兑换码可测 3 次，首次使用后 7 天内有效</p>
         </form>
 
-        <p className="lock-foot">本测评为娱乐向性格测验，结果不构成任何现实建议</p>
+        <p className="lock-foot">
+          兑换码将绑定本设备浏览器；清除数据或更换设备后身份无法自动恢复，需联系客服人工迁移。
+          <br />
+          本测评为娱乐向性格测验，结果不构成任何现实建议
+        </p>
       </div>
     </section>
   );

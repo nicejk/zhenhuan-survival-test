@@ -8,6 +8,7 @@ export default function ResultView({
   attempts = [],
   activeToken,
   remaining,
+  viewOnly = false,
   onSelectAttempt,
   onRetest,
   onSwitchCode,
@@ -160,30 +161,22 @@ export default function ResultView({
         <span className="paywall-arrow">→</span>
       </div>
 
-      <div className="retest">
-        {remaining > 0 ? (
-          <button className="retest-link" onClick={() => setRetestOpen(true)}>
-            这不太像我？再测一次
-            <span className="retest-remaining">（还剩 {remaining} 次）</span>
-          </button>
-        ) : remaining === 0 ? (
-          <>
-            <p className="retest-empty">
-              这个密码的测试机会已经用完了。想看新结果，换一个密码重新测。
-            </p>
-            <button className="btn-ghost switch-code-btn" onClick={onSwitchCode}>
-              重新输入密码
+      {!viewOnly && (
+        <div className="retest">
+          {remaining > 0 ? (
+            <button className="retest-link" onClick={() => setRetestOpen(true)}>
+              这不太像我？再测一次
+              <span className="retest-remaining">（还剩 {remaining} 次）</span>
             </button>
-          </>
-        ) : (
-          <button className="retest-link" onClick={() => setRetestOpen(true)}>
-            这不太像我？再测一次
-          </button>
-        )}
-        {remaining !== 0 && (
-          <button className="switch-code" onClick={onSwitchCode}>换一个密码</button>
-        )}
-      </div>
+          ) : remaining === 0 ? (
+            <p className="retest-empty">本兑换码的 3 次机会已用完。</p>
+          ) : (
+            <button className="retest-link" onClick={() => setRetestOpen(true)}>
+              这不太像我？再测一次
+            </button>
+          )}
+        </div>
+      )}
 
       {retestOpen && (
         <div className="modal-mask" onClick={() => setRetestOpen(false)}>
@@ -192,7 +185,7 @@ export default function ResultView({
             <h3 className="modal-title">再测一次？</h3>
             <p className="retest-text">
               重测会消耗 1 次机会
-              {remaining > 0 ? `（这个密码还剩 ${remaining} 次）` : ''}。第一次的结果不会丢，
+              {remaining > 0 ? `（本兑换码还剩 ${remaining} 次）` : ''}。第一次的结果不会丢，
               我们会把两次放在一起，看看你变了多少。
             </p>
             <p className="retest-tip">建议隔一段时间再测。刚做完立刻重测，答案会受上一轮影响。</p>

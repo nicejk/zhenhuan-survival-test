@@ -8,3 +8,4 @@ data
 *.log
 supabase/.temp
 .trae-html-share-packages
+scripts/.admin-key
