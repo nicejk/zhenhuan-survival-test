@@ -26,7 +26,8 @@ function json(body: unknown, status = 200) {
 // service_role：仅服务端
 const sb = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
 
-const CODE_RE = /^[0-9A-Z]{4}(-[0-9A-Z]{4}){2,3}$/;
+// 新码为 5 位纯数字（含前导零）；兼容存量 16 位 Crockford 旧码
+const CODE_RE = /^(\d{5}|[0-9A-Z]{4}(-[0-9A-Z]{4}){2,3})$/;
 
 function normalizeCode(raw: unknown): string {
   return String(raw || '').toUpperCase().replace(/[^0-9A-Z]/g, '');
@@ -88,11 +89,23 @@ async function getSession(id: string) {
 }
 
 // ---------- 管理端工具 ----------
-const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // Crockford，去掉易混淆字符
+/** 5 位纯数字兑换码（00000-99999，保留前导零）。密码学安全随机数 + 拒绝采样消除模偏差，不使用 Math.random */
 function generatePlainCode(): string {
-  const bytes = crypto.getRandomValues(new Uint8Array(16));
-  const chars = Array.from(bytes, (b) => CODE_ALPHABET[b % CODE_ALPHABET.length]).join('');
-  return `${chars.slice(0, 4)}-${chars.slice(4, 8)}-${chars.slice(8, 12)}-${chars.slice(12, 16)}`;
+  const buf = new Uint32Array(1);
+  const LIMIT = 4294900000; // floor(2^32 / 100000) * 100000
+  for (;;) {
+    crypto.getRandomValues(buf);
+    if (buf[0] < LIMIT) return String(buf[0] % 100000).padStart(5, '0');
+  }
+}
+
+/** 取客户端 IP 并归一化：x-forwarded-for 取最右（由平台网关追加，防客户端伪造）；IPv6 收敛到 /64 网段 */
+function clientIp(req: Request): string {
+  const fwd = req.headers.get('x-forwarded-for') || '';
+  const parts = fwd.split(',').map((s) => s.trim()).filter(Boolean);
+  const ip = parts.length ? parts[parts.length - 1] : '';
+  if (ip.includes(':')) return `${ip.split(':').slice(0, 4).join(':')}::/64`;
+  return ip || 'unknown';
 }
 
 function requireAdmin(req: Request): boolean {
@@ -136,14 +149,23 @@ Deno.serve(async (req) => {
         const uses = Math.min(Math.max(Number(body?.uses) || 3, 1), 99);
         const note = String(body?.note || '');
         const plain: string[] = [];
-        const rows: any[] = [];
+        // 逐个生成并插入：撞库（唯一约束 23505）时自动重新生成，保证不重复
         for (let i = 0; i < count; i += 1) {
-          const code = generatePlainCode();
-          plain.push(code);
-          rows.push({ code_hash: await hashCode(code), total_uses: uses, remaining_uses: uses, note });
+          let inserted = false;
+          for (let t = 0; t < 25 && !inserted; t += 1) {
+            const code = generatePlainCode();
+            const { error } = await sb.from('codes').insert({
+              code_hash: await hashCode(code), total_uses: uses, remaining_uses: uses, note,
+            });
+            if (!error) {
+              plain.push(code);
+              inserted = true;
+            } else if (error.code !== '23505') {
+              throw error;
+            }
+          }
+          if (!inserted) throw new Error('兑换码空间冲突过多，请重试');
         }
-        const { error } = await sb.from('codes').insert(rows);
-        if (error) throw error;
         await sb.from('admin_logs').insert({ action: 'generate', detail: { count, uses, note } });
         return json({ ok: true, codes: plain, count, uses });
       }
@@ -231,29 +253,31 @@ Deno.serve(async (req) => {
       return json({ ok: true, userId: uid, entitlement: entitlementOf(code), totalQuestions: QUESTIONS.length });
     }
 
-    /** 激活兑换码：绑定当前匿名用户，起算 7 天 */
+    /** 激活兑换码：绑定当前匿名用户，起算 7 天。带服务端限流；错误信息对外统一，不泄露码是否存在/绑定状态 */
     if (route[0] === 'activate' && req.method === 'POST') {
       const body = await req.json().catch(() => ({}));
       const raw = String(body?.code || '').trim().toUpperCase();
       if (!CODE_RE.test(raw)) {
-        return json({ ok: false, reason: 'invalid', message: '兑换码格式不正确，请核对后再试。' }, 400);
+        return json({ ok: false, reason: 'invalid', message: '兑换码不正确或不可用，如有疑问请联系客服。' }, 403);
       }
       const { data: r, error } = await sb.rpc('activate_code', {
         p_code_hash: await hashCode(raw),
         p_user_id: uid,
+        p_ip: clientIp(req),
       });
       if (error) throw error;
 
       if (!r?.ok) {
-        const messages: Record<string, string> = {
-          invalid: '兑换码不存在，请核对后再试。',
-          bound: '这个兑换码已被其他账号绑定，无法使用。',
-          frozen: '这个兑换码已被冻结，请联系客服。',
-          void: '这个兑换码已作废，请联系客服。',
-          expired: '这个兑换码已过 7 天有效期。',
-          exhausted: '这个兑换码的 3 次测评机会已经用完。',
-        };
-        return json({ ok: false, reason: r.reason, message: messages[r.reason] ?? '兑换码不可用。' }, 403);
+        // 失败响应加随机延迟，钝化计时侧信道
+        await new Promise((res) => setTimeout(res, 200 + Math.floor(Math.random() * 400)));
+        if (r.reason === 'rate_limited') {
+          return json({ ok: false, reason: r.reason, message: '操作过于频繁，请 1 分钟后再试。' }, 429);
+        }
+        if (r.reason === 'blocked') {
+          return json({ ok: false, reason: r.reason, message: '验证失败次数过多，已临时限制，请 15 分钟后再试。' }, 429);
+        }
+        // invalid / bound / frozen / void 等一律返回同一文案，不泄露兑换码是否存在、是否被他人绑定
+        return json({ ok: false, reason: 'invalid', message: '兑换码不正确或不可用，如有疑问请联系客服。' }, 403);
       }
       const code = await codeOfUser(uid);
       return json({ ok: true, already: r.already, entitlement: entitlementOf(code) });

@@ -62,7 +62,8 @@ export default function LockScreen({ onAuth, busy, entitlement }) {
             className="lock-input"
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
-            placeholder="例如 XXXX-XXXX-XXXX-XXXX"
+            placeholder="请输入 5 位数字兑换码"
+            maxLength={19}
             autoComplete="off"
             spellCheck="false"
           />
