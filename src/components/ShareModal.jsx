@@ -15,6 +15,7 @@ export default function ShareModal({ result, open, onClose, full = false }) {
     try {
       const node = cardRef.current;
       const { toPng } = await import('html-to-image'); // 仅生成分享长图时加载，减小首屏包
+      if (document.fonts?.ready) await document.fonts.ready; // 等字体就绪，避免字形跳动
       const dataUrl = await toPng(node, {
         pixelRatio: full ? 1.5 : 2, // 完整版更长，降低倍率避免超出画布上限
         backgroundColor: '#f2e7d5',

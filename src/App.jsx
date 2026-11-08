@@ -146,16 +146,29 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 激活兑换码
+  // 激活兑换码：先进入答题页，服务端校验在后台完成，避免等待空白
   const handleActivate = async (code) => {
-    setBusy(true);
+    const requestId = crypto.randomUUID();
+    localStorage.removeItem(ATTEMPT_KEY);
+    setAttempt(null);
+    setAnswers({});
+    setIndex(0);
+    setResult(null);
+    setBusy(false);
+    setStage('quiz');
     try {
+      await ensureIdentity();
       const data = await api('/api/activate', { code });
       setEntitlement(data.entitlement);
+      const r = await api('/api/attempts', { request_id: requestId });
+      localStorage.setItem(ATTEMPT_KEY, JSON.stringify({ requestId, token: r.token }));
+      setAttempt({ token: r.token, requestId, attemptNo: r.attemptNo });
+      setActiveToken(r.token);
       notify('兑换成功，权益已激活');
-      await routeByEntitlement(data.entitlement);
-    } finally {
-      setBusy(false);
+    } catch (e) {
+      // 校验失败：退回兑换码页，用 toast 提示（此时 LockScreen 已重新挂载）
+      setStage('lock');
+      notify(e.message || '兑换码不正确或不可用');
     }
   };
 

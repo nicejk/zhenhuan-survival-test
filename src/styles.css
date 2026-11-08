@@ -1063,6 +1063,13 @@ input {
   padding: 24px 20px 32px;
 }
 
+/* 截图时关闭入场动画：.report 的 fadeUp 会让首帧 opacity<1，成图发灰像蒙了层阴影 */
+.shot-full,
+.shot-full * {
+  animation: none !important;
+  transition: none !important;
+}
+
 .modal-mask {
   position: fixed;
   inset: 0;
