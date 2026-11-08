@@ -27,8 +27,11 @@ jobs:
         env:
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
 
+      - name: Install Netlify CLI
+        run: npm install --no-save netlify-cli@17
+
       - name: Deploy to Netlify
-        run: npx --yes netlify-cli@17 deploy $PROD_FLAG --dir=dist --functions=netlify/functions --site=$NETLIFY_SITE_ID --auth=$NETLIFY_AUTH_TOKEN
+        run: ./node_modules/.bin/netlify deploy $PROD_FLAG --dir=dist --functions=netlify/functions --site=$NETLIFY_SITE_ID --auth=$NETLIFY_AUTH_TOKEN
         env:
           # 手动触发且 prod=false 时部署预览；push 到 main 一律上正式
           PROD_FLAG: ${{ (github.event_name == 'workflow_dispatch' && !inputs.prod) && '' || '--prod' }}
