@@ -363,12 +363,15 @@ Deno.serve(async (req) => {
       return json({ ok: true, token: session.data?.id, result, remaining: r.remaining });
     }
 
-    /** 我的测评记录（对照/历史） */
+    /** 我的测评记录（对照/历史）：按当前兑换码隔离，换码后不串记录 */
     if (route[0] === 'attempts' && req.method === 'GET') {
+      const code = await codeOfUser(uid);
+      if (!code) return json({ ok: true, attempts: [] });
       const { data, error } = await sb
         .from('sessions')
         .select('id, request_id, attempt_no, status, consumed, result, started_at, completed_at')
         .eq('user_id', uid)
+        .eq('code_id', code.id)
         .eq('status', 'completed')
         .order('attempt_no', { ascending: true });
       if (error) throw error;

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 
-export default function LockScreen({ onAuth, busy, entitlement, booting, onWarm, authError, onClearAuthError }) {
+export default function LockScreen({ onAuth, busy, entitlement, booting, onWarm }) {
   const warmed = useRef(false); // 首次聚焦输入框时预热接口，减少点按钮后的等待
   const [code, setCode] = useState('');
   const [err, setErr] = useState('');
@@ -63,10 +63,7 @@ export default function LockScreen({ onAuth, busy, entitlement, booting, onWarm,
             id="code"
             className="lock-input"
             value={code}
-            onChange={(e) => {
-              setCode(e.target.value.toUpperCase());
-              if (authError) onClearAuthError?.();
-            }}
+            onChange={(e) => setCode(e.target.value.toUpperCase())}
             onFocus={() => {
               if (!warmed.current) {
                 warmed.current = true;
@@ -82,8 +79,7 @@ export default function LockScreen({ onAuth, busy, entitlement, booting, onWarm,
             {booting ? '正在开殿门…' : busy ? '正在验证…' : '开启殿门'}
           </button>
           {err && <p className="lock-error">{err}</p>}
-          {authError && !err && <p className="lock-error">{authError}</p>}
-          {frozenNote && !err && !authError && <p className="lock-error">{frozenNote}</p>}
+          {frozenNote && !err && <p className="lock-error">{frozenNote}</p>}
           <p className="lock-hint">每个兑换码可测 3 次，首次使用后 7 天内有效</p>
         </form>
 

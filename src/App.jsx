@@ -7,6 +7,7 @@ import ReportView from './components/ReportView.jsx';
 import { ensureIdentity, accessToken } from './lib/supabase.js';
 
 const ATTEMPT_KEY = 'zh_attempt';
+const LAST_CODE_KEY = 'zh_code'; // 上次激活的兑换码，用于换码时清空旧数据
 const draftKey = (rid) => `zh_answers:${rid}`;
 
 // 本地开发走 Vite 代理；GitHub Pages / Cloudflare 通过 VITE_API_BASE 直连 Supabase Edge Function；
@@ -53,7 +54,6 @@ export default function App() {
   const [busy, setBusy] = useState(false);
   const [grading, setGrading] = useState(false);
   const [activeToken, setActiveToken] = useState(null); // 测评对照当前选中的记录
-  const [authError, setAuthError] = useState(''); // 激活失败原因，回锁屏后展示
 
   const notify = (msg) => {
     setToast(msg);
@@ -147,43 +147,27 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 激活兑换码：先进入答题页，服务端校验在后台完成，避免等待空白
+  // 激活兑换码：先服务端校验，成功后才离开锁屏；失败直接回显在输入框下方
   const handleActivate = async (code) => {
-    const requestId = crypto.randomUUID();
-    localStorage.removeItem(ATTEMPT_KEY);
-    setAttempt(null);
-    setAnswers({});
-    setIndex(0);
-    setResult(null);
-    setBusy(false);
-    setStage('quiz');
-    setAuthError('');
-    // 网关/网络抖动自动重试一次；业务错误（带 reason）不重试
-    const call = async (fn, tries = 2) => {
-      try {
-        return await fn();
-      } catch (e) {
-        if (!e.reason && tries > 1) {
-          await new Promise((r) => setTimeout(r, 1200));
-          return call(fn, tries - 1);
-        }
-        throw e;
-      }
-    };
+    setBusy(true);
     try {
-      await call(() => ensureIdentity());
-      const data = await call(() => api('/api/activate', { code }));
+      const data = await api('/api/activate', { code });
+      // 换了兑换码：清掉上一个码的进行中测评与内存记录，避免新旧码数据混在一起
+      if (localStorage.getItem(LAST_CODE_KEY) !== code) {
+        localStorage.removeItem(ATTEMPT_KEY);
+        setAttempt(null);
+        setAnswers({});
+        setIndex(0);
+        setResult(null);
+        setAttempts([]);
+        setActiveToken(null);
+      }
+      localStorage.setItem(LAST_CODE_KEY, code);
       setEntitlement(data.entitlement);
-      const r = await call(() => api('/api/attempts', { request_id: requestId }));
-      localStorage.setItem(ATTEMPT_KEY, JSON.stringify({ requestId, token: r.token }));
-      setAttempt({ token: r.token, requestId, attemptNo: r.attemptNo });
-      setActiveToken(r.token);
       notify('兑换成功，权益已激活');
-    } catch (e) {
-      // 校验失败：退回兑换码页，并把原因留在输入框下方
-      console.warn('[activate]', e.reason || 'network', e.message);
-      setStage('lock');
-      setAuthError(e.message || '兑换码不正确或不可用');
+      await routeByEntitlement(data.entitlement);
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -306,8 +290,6 @@ export default function App() {
           booting={stage === 'boot'}
           onNotify={notify}
           onWarm={warmApi}
-          authError={authError}
-          onClearAuthError={() => setAuthError('')}
           entitlement={entitlement}
         />
       )}
