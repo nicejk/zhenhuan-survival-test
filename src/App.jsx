@@ -51,11 +51,23 @@ export default function App() {
   const [viewOnly, setViewOnly] = useState(false); // 通过分享链接看别人的结果
   const [toast, setToast] = useState('');
   const [busy, setBusy] = useState(false);
+  const [grading, setGrading] = useState(false);
+  const [activeToken, setActiveToken] = useState(null); // 测评对照当前选中的记录
 
   const notify = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(''), 2600);
   };
+
+  // 预热 API：Netlify 函数冷启动约 3-4 秒，提前打一次让后续请求命中热实例
+  const warmApi = () => {
+    fetch(`${API_BASE}/api/health`, { cache: 'no-store' }).catch(() => {});
+  };
+
+  // 进入待开始页时预热，用户看完介绍再点"开始"就不用等冷启动
+  useEffect(() => {
+    if (stage === 'gate') warmApi();
+  }, [stage]);
 
   const refreshAttempts = async () => {
     try {
@@ -159,6 +171,7 @@ export default function App() {
         ? JSON.parse(localStorage.getItem(draftKey(requestId)) || '{}')
         : {};
       setAttempt({ token: r.token, requestId, attemptNo: r.attemptNo });
+      setActiveToken(r.token);
       setAnswers(draft);
       setIndex(Math.min(Object.keys(draft).length, TOTAL_QUESTIONS - 1));
       setStage('quiz');
@@ -183,7 +196,12 @@ export default function App() {
 
   // 提交：服务端计分 + 原子扣次
   const handleFinish = async (finalAnswers) => {
+    if (!attempt) {
+      notify('题目还在准备中，请稍候再提交');
+      return;
+    }
     setBusy(true);
+    setGrading(true);
     try {
       const data = await api('/api/attempts/complete', {
         request_id: attempt.requestId,
@@ -192,6 +210,7 @@ export default function App() {
       localStorage.removeItem(ATTEMPT_KEY);
       localStorage.removeItem(draftKey(attempt.requestId));
       setResult(data.result);
+      setActiveToken(attempt.token);
       setViewOnly(false);
       setEntitlement((prev) => (prev ? { ...prev, remaining: data.remaining } : prev));
       setStage('result');
@@ -205,21 +224,44 @@ export default function App() {
       notify(e.message);
     } finally {
       setBusy(false);
+      setGrading(false);
     }
   };
 
   // 重测 = 再开一次测评（次数由服务端原子控制）
+  // 先进入答题页，题目本地即时可答；token 后台领取，避免几秒空白
   const handleRetest = async () => {
+    const prevResult = result;
     localStorage.removeItem(ATTEMPT_KEY);
-    setResult(null);
     setAttempt(null);
     setAnswers({});
     setIndex(0);
-    await handleBegin();
+    setResult(null);
+    setStage('quiz');
+    setBusy(true);
+    try {
+      const requestId = crypto.randomUUID();
+      const r = await api('/api/attempts', { request_id: requestId });
+      localStorage.setItem(ATTEMPT_KEY, JSON.stringify({ requestId, token: r.token }));
+      setAttempt({ token: r.token, requestId, attemptNo: r.attemptNo });
+      setActiveToken(r.token);
+    } catch (e) {
+      if (e.entitlement) {
+        setEntitlement(e.entitlement);
+        await routeByEntitlement(e.entitlement);
+      } else {
+        setResult(prevResult);
+        setStage('result');
+      }
+      notify(e.message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const handleSelectAttempt = (a) => {
     setResult(a.result);
+    setActiveToken(a.token);
     setViewOnly(false);
     setStage('result');
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -235,6 +277,7 @@ export default function App() {
           busy={busy}
           booting={stage === 'boot'}
           onNotify={notify}
+          onWarm={warmApi}
           entitlement={entitlement}
         />
       )}
@@ -282,7 +325,7 @@ export default function App() {
         </section>
       )}
 
-      {stage === 'quiz' && attempt && (
+      {stage === 'quiz' && (
         <Quiz
           answers={answers}
           index={index}
@@ -299,7 +342,7 @@ export default function App() {
         <ResultView
           result={result}
           attempts={viewOnly ? [] : attempts}
-          activeToken={attempt?.token}
+          activeToken={activeToken || attempt?.token}
           remaining={viewOnly ? null : remaining}
           expiresAt={fmtDate(entitlement?.expiresAt)}
           viewOnly={viewOnly}
@@ -360,6 +403,16 @@ export default function App() {
             <button className="btn-primary lock-btn" onClick={() => setStage('lock')}>使用新兑换码</button>
           </div>
         </section>
+      )}
+
+      {grading && (
+        <div className="grading-mask">
+          <div className="grading-inner">
+            <div className="grading-ring" />
+            <p className="grading-text">正在评估你的结果…</p>
+            <p className="grading-sub">六维评分与结局推演中，请稍候</p>
+          </div>
+        </div>
       )}
 
       {toast && <div className="toast">{toast}</div>}

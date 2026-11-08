@@ -1718,3 +1718,42 @@ input {
   .quiz-q { font-size: 19px; }
   .quiz-nav .btn-ghost { padding: 13px 12px; }
 }
+
+/* 提交后的全屏评估过渡：等待服务端计分时给出明确反馈，避免"卡住"的错觉 */
+.grading-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(27, 21, 18, 0.92);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+.grading-inner {
+  text-align: center;
+  color: #f2e7d5;
+}
+.grading-ring {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 22px;
+  border: 2px solid rgba(201, 164, 92, 0.22);
+  border-top-color: #c9a45c;
+  border-radius: 50%;
+  animation: grading-spin 0.9s linear infinite;
+}
+@keyframes grading-spin {
+  to { transform: rotate(360deg); }
+}
+.grading-text {
+  margin: 0 0 8px;
+  font-size: 16px;
+  letter-spacing: 0.08em;
+}
+.grading-sub {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.45;
+}

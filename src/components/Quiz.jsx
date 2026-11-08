@@ -75,7 +75,7 @@ export default function Quiz({ answers, index, setIndex, onAnswer, onFinish, rem
         <button className="btn-ghost" onClick={() => setIndex(Math.max(0, index - 1))} disabled={index === 0}>
           上一题
         </button>
-        {isLast && busy && <span className="quiz-submitting">正在结算…</span>}
+        {isLast && busy && <span className="quiz-submitting">正在评估…</span>}
       </footer>
 
       <p className="quiz-meta">已作答 {answered} / {total}</p>

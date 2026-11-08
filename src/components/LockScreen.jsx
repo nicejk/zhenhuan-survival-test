@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
-export default function LockScreen({ onAuth, busy, entitlement, booting }) {
+export default function LockScreen({ onAuth, busy, entitlement, booting, onWarm }) {
+  const warmed = useRef(false); // 首次聚焦输入框时预热接口，减少点按钮后的等待
   const [code, setCode] = useState('');
   const [err, setErr] = useState('');
 
@@ -63,6 +64,12 @@ export default function LockScreen({ onAuth, busy, entitlement, booting }) {
             className="lock-input"
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
+            onFocus={() => {
+              if (!warmed.current) {
+                warmed.current = true;
+                onWarm?.();
+              }
+            }}
             placeholder="请输入 5 位数字兑换码"
             maxLength={19}
             autoComplete="off"
