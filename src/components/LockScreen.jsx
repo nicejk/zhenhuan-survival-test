@@ -37,9 +37,9 @@ export default function LockScreen({ onAuth, busy, entitlement }) {
         <p className="lock-eyebrow">甄 嬛 传 · 生 存 力 测 评</p>
 
         <h1 className="lock-title">
-          你能在甄嬛传中
+          你在甄嬛传中
           <br />
-          活到<span className="hl">大结局</span>吗
+          能活到<span className="hl">第几集</span>
         </h1>
 
         <p className="lock-sub">
