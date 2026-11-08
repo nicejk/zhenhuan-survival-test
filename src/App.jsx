@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import LockScreen from './components/LockScreen.jsx';
 import { TOTAL_QUESTIONS } from '../shared/questions.js';
 import Quiz from './components/Quiz.jsx';
@@ -54,6 +54,8 @@ export default function App() {
   const [busy, setBusy] = useState(false);
   const [grading, setGrading] = useState(false);
   const [activeToken, setActiveToken] = useState(null); // 测评对照当前选中的记录
+  const pendingAttemptRef = useRef(null); // 重测时后台领取 token 的 Promise
+  const warmAtRef = useRef(0); // 预热节流时间戳
 
   const notify = (msg) => {
     setToast(msg);
@@ -62,12 +64,15 @@ export default function App() {
 
   // 预热 API：Netlify 函数冷启动约 3-4 秒，提前打一次让后续请求命中热实例
   const warmApi = () => {
+    const now = Date.now();
+    if (now - warmAtRef.current < 30000) return; // 30 秒内不重复预热
+    warmAtRef.current = now;
     fetch(`${API_BASE}/api/health`, { cache: 'no-store' }).catch(() => {});
   };
 
-  // 进入待开始页时预热，用户看完介绍再点"开始"就不用等冷启动
+  // 待开始页、结果页都预热，点"开始/再测一次"时函数已热
   useEffect(() => {
-    if (stage === 'gate') warmApi();
+    if (stage === 'gate' || stage === 'result') warmApi();
   }, [stage]);
 
   const refreshAttempts = async () => {
@@ -208,21 +213,27 @@ export default function App() {
 
   // 提交：服务端计分 + 原子扣次
   const handleFinish = async (finalAnswers) => {
-    if (!attempt) {
-      notify('题目还在准备中，请稍候再提交');
-      return;
-    }
+    if (busy) return;
     setBusy(true);
     setGrading(true);
     try {
+      let at = attempt;
+      // 重测时 token 可能还在后台领取：题目已可作答，提交时等 token 到位
+      if (!at && pendingAttemptRef.current) {
+        at = await pendingAttemptRef.current;
+      }
+      if (!at) {
+        notify('题目还在准备中，请稍候再提交');
+        return;
+      }
       const data = await api('/api/attempts/complete', {
-        request_id: attempt.requestId,
+        request_id: at.requestId,
         answers: finalAnswers,
       });
       localStorage.removeItem(ATTEMPT_KEY);
-      localStorage.removeItem(draftKey(attempt.requestId));
+      localStorage.removeItem(draftKey(at.requestId));
       setResult(data.result);
-      setActiveToken(attempt.token);
+      setActiveToken(at.token);
       setViewOnly(false);
       setEntitlement((prev) => (prev ? { ...prev, remaining: data.remaining } : prev));
       setStage('result');
@@ -241,8 +252,8 @@ export default function App() {
   };
 
   // 重测 = 再开一次测评（次数由服务端原子控制）
-  // 先进入答题页，题目本地即时可答；token 后台领取，避免几秒空白
-  const handleRetest = async () => {
+  // 立即进入答题页、立刻可作答；token 后台领取，不阻塞任何交互
+  const handleRetest = () => {
     const prevResult = result;
     localStorage.removeItem(ATTEMPT_KEY);
     setAttempt(null);
@@ -250,14 +261,28 @@ export default function App() {
     setIndex(0);
     setResult(null);
     setStage('quiz');
-    setBusy(true);
-    try {
+    warmApi();
+
+    const p = (async () => {
       const requestId = crypto.randomUUID();
       const r = await api('/api/attempts', { request_id: requestId });
       localStorage.setItem(ATTEMPT_KEY, JSON.stringify({ requestId, token: r.token }));
-      setAttempt({ token: r.token, requestId, attemptNo: r.attemptNo });
+      const at = { token: r.token, requestId, attemptNo: r.attemptNo };
+      setAttempt(at);
       setActiveToken(r.token);
-    } catch (e) {
+      // token 到达前用户可能已答了几题，补存草稿
+      setAnswers((prev) => {
+        if (Object.keys(prev).length) {
+          localStorage.setItem(draftKey(requestId), JSON.stringify(prev));
+        }
+        return prev;
+      });
+      return at;
+    })();
+    pendingAttemptRef.current = p;
+
+    p.catch(async (e) => {
+      pendingAttemptRef.current = null;
       if (e.entitlement) {
         setEntitlement(e.entitlement);
         await routeByEntitlement(e.entitlement);
@@ -266,9 +291,7 @@ export default function App() {
         setStage('result');
       }
       notify(e.message);
-    } finally {
-      setBusy(false);
-    }
+    });
   };
 
   const handleSelectAttempt = (a) => {
@@ -347,6 +370,7 @@ export default function App() {
           remaining={remaining}
           expiresAt={fmtDate(entitlement?.expiresAt)}
           busy={busy}
+          preparing={!attempt}
         />
       )}
 

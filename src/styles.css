@@ -428,6 +428,30 @@ input {
   transition: width 0.35s ease;
 }
 
+/* token 后台领取时的轻提示：题目已可作答，不阻塞交互 */
+.quiz-preparing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 12px auto 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: rgba(227, 201, 140, 0.8);
+}
+.quiz-preparing::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: prep-pulse 1s ease-in-out infinite;
+}
+@keyframes prep-pulse {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
 .quiz-body {
   flex: 1;
   padding: 30px 20px 20px;

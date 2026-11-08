@@ -3,7 +3,7 @@ import { QUESTION_BY_ID, USER_ORDER } from '../../shared/questions.js';
 
 const LETTERS = ['A', 'B', 'C', 'D'];
 
-export default function Quiz({ answers, index, setIndex, onAnswer, onFinish, remaining, expiresAt, busy }) {
+export default function Quiz({ answers, index, setIndex, onAnswer, onFinish, remaining, expiresAt, busy, preparing }) {
   const total = USER_ORDER.length;
   const current = QUESTION_BY_ID[USER_ORDER[index]];
   const selected = answers[current.id];
@@ -50,6 +50,12 @@ export default function Quiz({ answers, index, setIndex, onAnswer, onFinish, rem
       <div className="quiz-bar">
         <div className="quiz-bar-fill" style={{ width: `${progress}%` }} />
       </div>
+
+      {preparing && (
+        <div className="quiz-preparing" role="status">
+          正在准备题目…
+        </div>
+      )}
 
       <main className="quiz-body" key={current.id}>
         <p className="quiz-scene">{current.scene}</p>
