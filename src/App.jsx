@@ -291,7 +291,7 @@ export default function App() {
           <div className="lock-inner">
             <p className="lock-eyebrow">甄 嬛 传 · 生 存 力 测 评</p>
             <h1 className="lock-title">
-              你在宫里
+              你在甄嬛传中
               <br />
               能活到<span className="hl">第几集</span>
             </h1>

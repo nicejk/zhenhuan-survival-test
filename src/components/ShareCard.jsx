@@ -23,7 +23,7 @@ export default function ShareCard({ result }) {
         <p className="sc-eyebrow">甄 嬛 传 · 生 存 力 测 评</p>
 
         <div className="sc-ep">
-          <span className="sc-ep-pre">我在宫里活到</span>
+          <span className="sc-ep-pre">我在甄嬛传中活到</span>
           <div className="sc-ep-num">
             <span className="sc-ep-label">第</span>
             <span className="sc-ep-digit">{episode}</span>
