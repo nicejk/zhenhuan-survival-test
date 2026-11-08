@@ -27,6 +27,10 @@ jobs:
         env:
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
 
+      # sharp（netlify-cli 依赖）预编译二进制偶发下载失败时会回退源码编译，需要 libvips
+      - name: Install libvips (for sharp fallback build)
+        run: sudo apt-get update && sudo apt-get install -y libvips-dev
+
       - name: Install Netlify CLI
         run: npm install --no-save netlify-cli@17
 
