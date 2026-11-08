@@ -139,7 +139,7 @@ export function buildResult(answers) {
     },
     dimDetail: computed.dimDetail,
     dims: computed.dims,
-    shareText: `我在《甄嬛传》里活到第 ${computed.episode} 集。\n死因：${cause.title.replace('死于', '')}。\n原型：${archetype.name}型｜${archetype.alias}。\n你呢？`,
+    shareText: `我在甄嬛传中活到第 ${computed.episode} 集。\n死因：${cause.title.replace('死于', '')}。\n原型：${archetype.name}型｜${archetype.alias}。\n你呢？`,
   };
 
   publicResult.full = {
