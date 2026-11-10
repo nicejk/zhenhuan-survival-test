@@ -11,3 +11,9 @@ supabase/.temp
 scripts/.admin-key
 scripts/.cf-token
 scripts/.netlify-token
+
+# Tencent Cloud EdgeOne
+.env
+.edgeone/*
+.tef_dist/*
+  

@@ -8,6 +8,7 @@
     "dev:api": "node --watch server/index.js",
     "dev:web": "vite",
     "build": "vite build",
+    "build:edgeone": "vite build && node scripts/prepare-edgeone.mjs",
     "start": "cross-env NODE_ENV=production node server/index.js",
     "seed": "node server/seed.js",
     "gen-codes": "node server/gen-codes.js"

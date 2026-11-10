@@ -6,8 +6,8 @@
 
 | 项目 | 值 |
 |---|---|
-| 正式网址 | https://gongdou.zhenhuan.workers.dev |
-| 备用网址 | https://nicejk.github.io/zhenhuan-survival-test/ |
+| 正式网址 | https://gongdou-test.netlify.app |
+| 备用网址 | https://nicejk.github.io/zhenhuan-survival-test/（国内可能不稳定） |
 | 商品规则 | 5 位数字码 / 3 次测评 / 首次激活起 7 天有效 / 绑定一台设备 |
 | 管理后台 | Supabase Dashboard → Table Editor → codes 表（看状态）；终端脚本（干活） |
 | 管理脚本 | `scripts/admin.mjs`（密钥在 `scripts/.admin-key`，绝不外传） |
@@ -38,7 +38,7 @@ node scripts/admin.mjs generate 50 3 批次-1108
 3. 发送话术（直接复制）：
 
 > 你的测评兑换码：**51017**
-> ① 打开 https://gongdou.zhenhuan.workers.dev
+> ① 打开 https://gongdou-test.netlify.app
 > ② 输入兑换码，即可开始
 > 可测 3 次，首次使用后 7 天内有效。兑换码绑定首次使用的设备，请勿分享给他人，也不要清除浏览器数据。
 

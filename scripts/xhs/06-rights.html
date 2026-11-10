@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1242px; height:1660px; }
+  body {
+    background:#14100e; color:#f7efe2; overflow:hidden; position:relative;
+    font-family:"PingFang SC","Hiragino Sans GB","Songti SC",serif;
+    background-image:
+      radial-gradient(55% 40% at 50% 6%, rgba(139,30,30,.32), transparent 72%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.016) 0 1px, transparent 1px 6px);
+  }
+  .frame { position:absolute; inset:44px; border:1px solid rgba(201,162,76,.24); }
+
+  .inner { position:absolute; inset:0; padding:88px 96px 84px; display:flex; flex-direction:column; z-index:2; }
+
+  .eyebrow { font-size:18px; letter-spacing:12px; color:#c9a24c; text-align:center; }
+  .title {
+    margin-top:30px; text-align:center; font-family:"Songti SC",serif;
+    font-size:80px; line-height:1.16; font-weight:600; letter-spacing:1px;
+  }
+  .title .hl { color:#e5cf9c; }
+  .sub { margin-top:24px; text-align:center; font-size:23px; letter-spacing:1px; color:rgba(247,239,226,.6); }
+
+  .price {
+    margin-top:56px; padding:44px 0 40px; text-align:center; border-radius:24px;
+    border:1px solid rgba(201,162,76,.42);
+    background:
+      radial-gradient(70% 100% at 50% 0%, rgba(201,162,76,.14), transparent 70%),
+      linear-gradient(180deg, rgba(201,162,76,.06), rgba(201,162,76,.015));
+  }
+  .price .label { font-size:20px; letter-spacing:8px; color:rgba(247,239,226,.55); }
+  .price .num {
+    margin-top:18px; font-family:"Songti SC",serif; font-size:150px; line-height:1;
+    color:#e5cf9c; letter-spacing:-2px;
+  }
+  .price .num i { font-style:normal; font-size:46px; margin-left:10px; letter-spacing:0; }
+  .price .note { margin-top:20px; font-size:21px; color:rgba(247,239,226,.6); }
+
+  .grid {
+    flex:1; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr;
+    gap:20px; margin-top:26px;
+  }
+  .item {
+    padding:0 36px; border-radius:16px; border:1px solid rgba(247,239,226,.1);
+    background:linear-gradient(160deg, rgba(247,239,226,.055), rgba(247,239,226,.02));
+    display:flex; flex-direction:column; justify-content:center;
+  }
+  .item .k { font-size:19px; letter-spacing:4px; color:#c9a24c; }
+  .item b { margin-top:14px; font-size:33px; line-height:1.35; font-weight:600; letter-spacing:1px; }
+  .item p { margin-top:12px; font-size:19px; line-height:1.6; color:rgba(247,239,226,.55); }
+
+  .foot {
+    margin-top:30px; text-align:center;
+    font-size:19px; letter-spacing:1px; color:rgba(247,239,226,.44);
+  }
+</style>
+</head>
+<body>
+  <div class="frame"></div>
+  <div class="inner">
+    <p class="eyebrow">商 品 权 益</p>
+    <h1 class="title">一次体验，<span class="hl">最多三次</span></h1>
+    <p class="sub">0.99 元体验版 · 买一份，你自己测，也可以拉着人一起测</p>
+
+    <div class="price">
+      <div class="label">体 验 价</div>
+      <div class="num">0.99<i>元</i></div>
+      <div class="note">一笔订单，一个独立兑换码</div>
+    </div>
+
+    <div class="grid">
+      <div class="item">
+        <div class="k">兑 换 码</div>
+        <b>5 位数字<br>每单独立</b>
+        <p>不同订单的码互不相通，测评记录各自独立。</p>
+      </div>
+      <div class="item">
+        <div class="k">次 数</div>
+        <b>一个码<br>最多 3 次</b>
+        <p>最多完成 3 次，页面会显示剩余次数。</p>
+      </div>
+      <div class="item">
+        <div class="k">方 式</div>
+        <b>手机浏览器<br>在线答题</b>
+        <p>手机打开链接就能答题，不用下载或注册。</p>
+      </div>
+      <div class="item">
+        <div class="k">结 果</div>
+        <b>答完即出<br>完整结果</b>
+        <p>集数、死因、原型、六维分数，附完整版报告。</p>
+      </div>
+    </div>
+
+    <p class="foot">兑换码请妥善保管，不要公开发布；如遇无法激活，请联系店铺客服</p>
+  </div>
+</body>
+</html>

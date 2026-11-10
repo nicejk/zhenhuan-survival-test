@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1242px; height:1660px; }
+  body {
+    background:#14100e; color:#f7efe2; overflow:hidden; position:relative;
+    font-family:"PingFang SC","Hiragino Sans GB","Songti SC",serif;
+    background-image:
+      radial-gradient(60% 45% at 50% 8%, rgba(139,30,30,.38), transparent 70%),
+      radial-gradient(40% 30% at 82% 78%, rgba(201,162,76,.12), transparent 70%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 1px, transparent 1px 6px);
+  }
+  .seal-char {
+    position:absolute; right:-40px; bottom:120px; font-family:"Songti SC",serif;
+    font-size:420px; color:rgba(201,162,76,.06); line-height:1; user-select:none;
+  }
+  .frame { position:absolute; inset:44px; border:1px solid rgba(201,162,76,.28); }
+  .frame::before, .frame::after {
+    content:""; position:absolute; width:56px; height:56px; border:1px solid rgba(201,162,76,.5);
+  }
+  .frame::before { left:-1px; top:-1px; border-right:0; border-bottom:0; }
+  .frame::after { right:-1px; bottom:-1px; border-left:0; border-top:0; }
+
+  .inner { position:relative; z-index:2; padding:80px 92px 0; }
+
+  .eyebrow {
+    font-size:19px; letter-spacing:14px; color:#c9a24c; text-align:center; opacity:.95;
+  }
+  .rule { width:120px; height:1px; background:linear-gradient(90deg,transparent,#c9a24c,transparent); margin:26px auto 0; }
+
+  .title {
+    margin-top:38px; text-align:center; font-family:"Songti SC","STSong",serif;
+    font-size:86px; line-height:1.15; letter-spacing:2px; font-weight:600;
+  }
+  .title .hl { color:#e5cf9c; }
+
+  .sub {
+    margin-top:26px; text-align:center; font-size:23px; line-height:1.8;
+    color:rgba(247,239,226,.72); letter-spacing:2px;
+  }
+
+  .phone-wrap { position:absolute; left:50%; transform:translateX(-50%); bottom:196px; }
+  .phone {
+    width:482px; height:830px; border-radius:44px; overflow:hidden;
+    border:1px solid rgba(201,162,76,.55);
+    box-shadow:0 40px 90px rgba(0,0,0,.55), 0 0 0 8px rgba(255,255,255,.03);
+    background:#1b1512;
+  }
+  .phone img {
+    width:100%; height:830px; object-fit:cover; object-position:top center; display:block;
+    -webkit-mask-image:linear-gradient(180deg, #000 68%, rgba(0,0,0,.5) 86%, transparent 99%);
+    mask-image:linear-gradient(180deg, #000 68%, rgba(0,0,0,.5) 86%, transparent 99%);
+  }
+  .phone-cap {
+    margin-top:20px; text-align:center; font-size:18px; letter-spacing:5px;
+    color:rgba(247,239,226,.5);
+  }
+
+  .bottom {
+    position:absolute; left:0; right:0; bottom:88px; display:flex;
+    justify-content:center; align-items:center; gap:24px;
+  }
+  .pill {
+    padding:20px 36px; border:1px solid rgba(201,162,76,.45); border-radius:999px;
+    background:rgba(201,162,76,.07); font-size:25px; letter-spacing:2px; color:#e5cf9c;
+  }
+  .pill.plain { border-color:rgba(247,239,226,.16); background:transparent; color:rgba(247,239,226,.66); }
+</style>
+</head>
+<body>
+  <div class="frame"></div>
+  <div class="seal-char">生</div>
+
+  <div class="inner">
+    <p class="eyebrow">甄 嬛 传 · 生 存 力 测 评</p>
+    <div class="rule"></div>
+
+    <h1 class="title">你能在甄嬛传中<br>活到<span class="hl">第几集</span></h1>
+    <p class="sub">25 道真实情境题 · 六维权力生存力<br>算出一个只属于你的集数</p>
+  </div>
+
+  <div class="phone-wrap">
+    <div class="phone">
+      <img src="../../.screenshots/live-result.png" alt="result">
+    </div>
+    <p class="phone-cap">真 实 测 评 结 果 页</p>
+  </div>
+
+  <div class="bottom">
+    <span class="pill">0.99 元 · 体验版</span>
+    <span class="pill plain">每个兑换码最多 3 次</span>
+  </div>
+</body>
+</html>

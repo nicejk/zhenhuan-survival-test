@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1242px; height:1660px; }
+  body {
+    background:#14100e; color:#f7efe2; overflow:hidden; position:relative;
+    font-family:"PingFang SC","Hiragino Sans GB","Songti SC",serif;
+    background-image:
+      radial-gradient(55% 40% at 50% 6%, rgba(139,30,30,.32), transparent 72%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.016) 0 1px, transparent 1px 6px);
+  }
+  .frame { position:absolute; inset:44px; border:1px solid rgba(201,162,76,.24); }
+
+  .head { position:absolute; top:88px; left:96px; right:96px; text-align:center; z-index:3; }
+  .eyebrow { font-size:18px; letter-spacing:12px; color:#c9a24c; }
+  .title {
+    margin-top:28px; font-family:"Songti SC",serif;
+    font-size:78px; line-height:1.15; font-weight:600; letter-spacing:1px;
+  }
+  .title .hl { color:#e5cf9c; }
+  .sub { margin-top:20px; font-size:23px; letter-spacing:1px; color:rgba(247,239,226,.6); }
+
+  .shot {
+    position:absolute; left:96px; top:340px; width:560px; z-index:2;
+    border-radius:50px; overflow:hidden;
+    border:1px solid rgba(201,162,76,.5);
+    box-shadow:0 40px 90px rgba(0,0,0,.55), 0 0 0 8px rgba(201,162,76,.06);
+  }
+  .shot img { display:block; width:100%; height:auto; }
+
+  .caption {
+    position:absolute; left:98px; top:1576px; z-index:3;
+    font-size:17px; letter-spacing:3px; color:rgba(247,239,226,.42);
+  }
+
+  .notes { position:absolute; left:700px; right:84px; top:352px; z-index:3; }
+  .note { margin-bottom:36px; }
+  .note .no {
+    font-family:"Songti SC",serif; font-size:32px; color:#c9a24c; letter-spacing:2px;
+  }
+  .note b {
+    display:block; margin-top:10px; font-size:30px; line-height:1.35; font-weight:600;
+    color:#f7efe2; letter-spacing:1px;
+  }
+  .note p {
+    margin-top:12px; font-size:19px; line-height:1.7; color:rgba(247,239,226,.58);
+  }
+  .rule { height:1px; background:linear-gradient(90deg, rgba(201,162,76,.45), transparent); margin-bottom:30px; }
+
+  .closing {
+    position:absolute; left:700px; right:84px; top:1318px; z-index:3;
+    padding-left:24px; border-left:2px solid rgba(201,162,76,.4);
+  }
+  .closing p { font-size:20px; line-height:1.75; color:rgba(247,239,226,.55); }
+  .closing p b { color:rgba(247,239,226,.8); font-weight:600; }
+</style>
+</head>
+<body>
+  <div class="frame"></div>
+
+  <div class="head">
+    <p class="eyebrow">真 实 结 果 页</p>
+    <h1 class="title">答案不是一句<span class="hl">「你很好」</span></h1>
+    <p class="sub">是一个集数，一个原型，和六个维度的分数</p>
+  </div>
+
+  <div class="shot">
+    <img src="../../.screenshots/live-result.png" alt="result page">
+  </div>
+  <p class="caption">· 示例结果 · 真实页面截图 ·</p>
+
+  <div class="notes">
+    <div class="note">
+      <div class="no">01</div>
+      <b>先给你一个集数</b>
+      <p>「活到第几集」不是随口编的，<br>由六维加权后的总分换算而来。</p>
+    </div>
+    <div class="rule"></div>
+    <div class="note">
+      <div class="no">02</div>
+      <b>再给你一句死因</b>
+      <p>按你最弱的那一维给出，<br>不是套模板，是分维度判断的。</p>
+    </div>
+    <div class="rule"></div>
+    <div class="note">
+      <div class="no">03</div>
+      <b>十二种原型，落在你身上</b>
+      <p>叶澜依型｜不驯的野马，<br>外加六维雷达图和逐项分数。</p>
+    </div>
+    <div class="rule"></div>
+    <div class="note">
+      <div class="no">04</div>
+      <b>还能往下展开完整版</b>
+      <p>生存画像、六维逐项深读、三个高风险时刻，<br>还有 30 天微调计划，不用另外付费。</p>
+    </div>
+  </div>
+
+  <div class="closing">
+    <p><b>给的是倾向，不是定论</b><br>换个处境、换种选法，分数也会跟着变。</p>
+  </div>
+</body>
+</html>

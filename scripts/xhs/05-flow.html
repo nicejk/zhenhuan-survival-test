@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1242px; height:1660px; }
+  body {
+    background:#14100e; color:#f7efe2; overflow:hidden; position:relative;
+    font-family:"PingFang SC","Hiragino Sans GB","Songti SC",serif;
+    background-image:
+      radial-gradient(55% 40% at 50% 6%, rgba(139,30,30,.32), transparent 72%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.016) 0 1px, transparent 1px 6px);
+  }
+  .frame { position:absolute; inset:44px; border:1px solid rgba(201,162,76,.24); }
+
+  .inner { position:absolute; inset:0; padding:88px 96px 84px; display:flex; flex-direction:column; z-index:2; }
+
+  .eyebrow { font-size:18px; letter-spacing:12px; color:#c9a24c; text-align:center; }
+  .title {
+    margin-top:30px; text-align:center; font-family:"Songti SC",serif;
+    font-size:80px; line-height:1.16; font-weight:600; letter-spacing:1px;
+  }
+  .title .hl { color:#e5cf9c; }
+  .sub { margin-top:24px; text-align:center; font-size:23px; letter-spacing:1px; color:rgba(247,239,226,.6); }
+
+  .steps { flex:1; display:flex; flex-direction:column; justify-content:center; gap:24px; margin-top:32px; }
+
+  .step {
+    position:relative; display:flex; align-items:center; gap:32px;
+    padding:40px 38px; border-radius:18px;
+    border:1px solid rgba(247,239,226,.08);
+    background:linear-gradient(100deg, rgba(247,239,226,.05), rgba(247,239,226,.012));
+  }
+  .step .idx {
+    flex:0 0 auto; width:86px; height:86px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:"Songti SC",serif; font-size:36px; color:#e5cf9c;
+    border:1px solid rgba(201,162,76,.45);
+    background:radial-gradient(circle at 50% 30%, rgba(201,162,76,.16), transparent 70%);
+  }
+  .step .txt b {
+    display:block; font-size:33px; font-weight:600; letter-spacing:1px; color:#f7efe2;
+  }
+  .step .txt p {
+    margin-top:12px; font-size:20px; line-height:1.6; color:rgba(247,239,226,.56);
+  }
+  .step .txt p em { font-style:normal; color:#e5cf9c; }
+
+  .foot {
+    margin-top:26px; text-align:center;
+    font-size:19px; letter-spacing:1px; color:rgba(247,239,226,.44);
+  }
+</style>
+</head>
+<body>
+  <div class="frame"></div>
+  <div class="inner">
+    <p class="eyebrow">购 买 与 使 用</p>
+    <h1 class="title">五步，看到你的<span class="hl">集数</span></h1>
+    <p class="sub">不需要注册账号，也不用下载 App</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="idx">01</div>
+        <div class="txt">
+          <b>在小红书下单</b>
+          <p>拍「0.99 元体验版」，完成支付。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="idx">02</div>
+        <div class="txt">
+          <b>拿到专属兑换码</b>
+          <p>每笔订单对应一个 <em>5 位数字</em>兑换码，订单之间不重复。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="idx">03</div>
+        <div class="txt">
+          <b>打开测评网站</b>
+          <p>手机浏览器直接打开链接，看到「开启殿门」的输入框。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="idx">04</div>
+        <div class="txt">
+          <b>输入兑换码，开始答题</b>
+          <p>填 5 位数字后进入答题页，25 道情境题，四选一。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="idx">05</div>
+        <div class="txt">
+          <b>完成测评，查看结果</b>
+          <p>选出你的集数、死因、原型，以及六维分数和完整版报告。</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="foot">每个兑换码最多可完成 3 次测评 · 请妥善保管，不要公开分享</p>
+  </div>
+</body>
+</html>

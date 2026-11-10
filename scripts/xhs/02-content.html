@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1242px; height:1660px; }
+  body {
+    background:#14100e; color:#f7efe2; overflow:hidden; position:relative;
+    font-family:"PingFang SC","Hiragino Sans GB","Songti SC",serif;
+    background-image:
+      radial-gradient(55% 40% at 50% 6%, rgba(139,30,30,.32), transparent 72%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.016) 0 1px, transparent 1px 6px);
+  }
+  .frame { position:absolute; inset:44px; border:1px solid rgba(201,162,76,.24); }
+  .inner {
+    position:absolute; inset:0; z-index:2; padding:88px 96px 84px;
+    display:flex; flex-direction:column;
+  }
+
+  .eyebrow { font-size:18px; letter-spacing:12px; color:#c9a24c; text-align:center; }
+  .title {
+    margin-top:36px; text-align:center; font-family:"Songti SC",serif;
+    font-size:82px; line-height:1.18; font-weight:600; letter-spacing:1px;
+  }
+  .title .hl { color:#e5cf9c; }
+  .sub {
+    margin-top:26px; text-align:center; font-size:25px; line-height:1.75;
+    color:rgba(247,239,226,.68);
+  }
+
+  .stats { display:flex; justify-content:center; gap:20px; margin-top:50px; }
+  .stat {
+    flex:1; min-width:0; padding:30px 0 28px; text-align:center;
+    border:1px solid rgba(201,162,76,.28); border-radius:16px;
+    background:rgba(201,162,76,.05);
+  }
+  .stat b { display:block; font-family:"Songti SC",serif; font-size:60px; color:#e5cf9c; line-height:1; }
+  .stat span { display:block; margin-top:14px; font-size:20px; letter-spacing:3px; color:rgba(247,239,226,.6); }
+
+  .sec-title {
+    margin-top:58px; font-size:21px; letter-spacing:7px; color:#c9a24c; text-align:center;
+  }
+  .grid {
+    flex:1; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:repeat(3,1fr);
+    gap:20px; margin-top:24px;
+  }
+  .dim {
+    padding:0 34px; border-radius:16px; border:1px solid rgba(247,239,226,.1);
+    background:linear-gradient(160deg, rgba(247,239,226,.055), rgba(247,239,226,.02));
+    display:flex; flex-direction:column; justify-content:center;
+  }
+  .dim b { font-size:32px; letter-spacing:2px; color:#f7efe2; font-weight:600; }
+  .dim .desc { margin-top:12px; font-size:20px; line-height:1.55; color:rgba(247,239,226,.62); }
+  .dim .palace { margin-top:14px; font-size:19px; letter-spacing:2px; color:rgba(201,162,76,.85); }
+
+  .foot {
+    margin-top:36px; text-align:center;
+    font-size:20px; line-height:1.8; color:rgba(247,239,226,.5);
+  }
+</style>
+</head>
+<body>
+  <div class="frame"></div>
+  <div class="inner">
+    <p class="eyebrow">甄 嬛 传 · 生 存 力 测 评</p>
+    <h1 class="title">这不是随手抽的<span class="hl">签</span></h1>
+    <p class="sub">25 道《甄嬛传》情境题<br>按六个维度打分，落到一个集数</p>
+
+    <div class="stats">
+      <div class="stat"><b>25</b><span>道情境题</span></div>
+      <div class="stat"><b>6</b><span>个维度</span></div>
+      <div class="stat"><b>12</b><span>种宫斗原型</span></div>
+    </div>
+
+    <p class="sec-title">测 的 是 这 六 件 事</p>
+    <div class="grid">
+      <div class="dim"><b>察言观色</b><p class="desc">读人、读场，先看懂再开口</p><p class="palace">听得懂话外音</p></div>
+      <div class="dim"><b>人情经营</b><p class="desc">关系怎么处，人情怎么还</p><p class="palace">有没有人替你说话</p></div>
+      <div class="dim"><b>情绪自控</b><p class="desc">被冒犯时，你能不能稳住</p><p class="palace">沉不沉得住气</p></div>
+      <div class="dim"><b>进退分寸</b><p class="desc">什么时候该争，什么时候该退</p><p class="palace">知不知道该说什么</p></div>
+      <div class="dim"><b>决断魄力</b><p class="desc">关键一步，你敢不敢下</p><p class="palace">敢不敢下手</p></div>
+      <div class="dim"><b>心性底线</b><p class="desc">利益面前，你守不守得住</p><p class="palace">愿不愿脏手</p></div>
+    </div>
+
+    <p class="foot">适合：爱看《甄嬛传》· 喜欢性格测试 · 想看清自己处事方式的人</p>
+  </div>
+</body>
+</html>
